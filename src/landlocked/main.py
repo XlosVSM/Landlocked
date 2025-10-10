@@ -1,5 +1,5 @@
 import sys
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PySide6.QtGui import QPalette
 
 PHONESIZE = (360, 640)
@@ -19,18 +19,47 @@ class MainWindow(QWidget):
         self.label = QLabel("Hello World")
         layout.addWidget(self.label)
         
-        self.button = QPushButton("Click Me!")
-        self.button.clicked.connect(self.on_button_clicked)
-        layout.addWidget(self.button)
-
+        ##########################
+        # Add bottom row buttons #
+        ##########################
+        layout.addStretch()     # Push buttons to bottom
+        
+        buttonRow = QHBoxLayout()
+        buttonRow.setContentsMargins(0, 0, 0, 0)
+        buttonRow.setSpacing(0)
+        
+        # Create buttons
+        self.activityButton = QPushButton("Activity")
+        self.mapButton = QPushButton("Map")
+        self.scoreButton = QPushButton("Score")
+        
+        # Connect buttons
+        for button in (self.activityButton, self.mapButton, self.scoreButton):
+            button.setSizePolicy(button.sizePolicy().horizontalPolicy(), button.sizePolicy().verticalPolicy())
+            button.setStyleSheet("border: 1px solid black; padding: 15px;")
+        
+        self.activityButton.clicked.connect(lambda: self.buttonClicked("Activity"))
+        self.mapButton.clicked.connect(lambda: self.buttonClicked("Map"))
+        self.scoreButton.clicked.connect(lambda: self.buttonClicked("Score"))
+        
+        # Add buttons to row
+        buttonRow.addWidget(self.activityButton)
+        buttonRow.addWidget(self.mapButton)
+        buttonRow.addWidget(self.scoreButton)
+        
+        layout.addLayout(buttonRow)
+        
+        ###################
+        # Set main layout #
+        ###################
         self.setLayout(layout)
         
-    def on_button_clicked(self):
+    def buttonClicked(self, buttonName: str):
         """
         Handle button click
         """
         
-        self.label.setText("Button Clicked!")
+        self.label.setText(f"{buttonName} clicked")
     
 class LandlockedApp(QApplication):
     def __init__(self, argv):
