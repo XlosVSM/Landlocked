@@ -47,7 +47,7 @@ class LandlockedApp(QApplication):
         
     def isDarkMode(self) -> bool:
         palette = self.palette()
-        color = palette.color(QPalette.Window)
+        color = palette.color(QPalette.ColorRole.Window)
         
         return color.value() < 128
         
