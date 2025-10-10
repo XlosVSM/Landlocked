@@ -1,14 +1,14 @@
 import os
+from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
-from PySide6.QtGui import QPalette
 import sys
 
 #####################
 # Declare constants #
 #####################
 PHONESIZE = (360, 640)
-PROJECTROOT = os.path.dirname(os.path.join(os.path.dirname(__file__), '../../..'))
+PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 class MainWindow(QWidget):
     """
