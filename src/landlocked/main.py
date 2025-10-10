@@ -2,6 +2,9 @@ import sys
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PySide6.QtGui import QPalette
 
+#####################
+# Declare constants #
+#####################
 PHONESIZE = (360, 640)
 
 class MainWindow(QWidget):
