@@ -1,5 +1,6 @@
 import sys
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel
+from PySide6.QtGui import QPalette
 
 PHONESIZE = (360, 640)
 
@@ -35,6 +36,26 @@ class LandlockedApp(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
         self.window = MainWindow()
+        
+        self.darkMode = self.isDarkMode()
+        
+        if self.darkMode:
+            self.applyDarkMode()
+            
+        else:
+            self.applyLightMode()
+        
+    def isDarkMode(self) -> bool:
+        palette = self.palette()
+        color = palette.color(QPalette.Window)
+        
+        return color.value() < 128
+        
+    def applyDarkMode(self):
+        darkMode = QPalette()
+        
+    def applyLightMode(self):
+        self.setPalette(QPalette())
         
     def run(self):
         self.window.show()
