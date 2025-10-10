@@ -1,4 +1,5 @@
 import os
+from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 from PySide6.QtGui import QPalette
 import sys
@@ -23,6 +24,12 @@ class MainWindow(QWidget):
         
         self.label = QLabel("Hello World")
         layout.addWidget(self.label)
+        
+        # ===== Add interactive map =====
+        self.mapView = QWebEngineView()
+        
+        self.mapView.setUrl("https://www.openstreetmap.org")
+        layout.addWidget(self.mapView, stretch = 1)
         
         # ===== Add bottom row buttons =====
         layout.addStretch()     # Push buttons to bottom
