@@ -3,29 +3,45 @@ from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, Q
 
 PHONESIZE = (360, 640)
 
-def createWindow():
-    window = QWidget()
-    window.setWindowTitle("Landlocked!")
-
-    layout = QVBoxLayout()  # Phone layout
-
-    label = QLabel("Hello World")
-    layout.addWidget(label)
+class MainWindow(QWidget):
+    """
+    Main application
+    """
     
-    button = QPushButton("Click Me!")
-    button.clicked.connect(lambda: label.setText("Button Clicked!"))
-    layout.addWidget(button)
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Landlocked!")
+        self.setFixedSize(*PHONESIZE)
+        
+        layout = QVBoxLayout()
+        
+        self.label = QLabel("Hello World")
+        layout.addWidget(self.label)
+        
+        self.button = QPushButton("Click Me!")
+        self.button.clicked.connect(self.on_button_clicked)
+        layout.addWidget(self.button)
 
-    window.setLayout(layout)
+        self.setLayout(layout)
+        
+    def on_button_clicked(self):
+        """
+        Handle button click
+        """
+        
+        self.label.setText("Button Clicked!")
     
-    # Phone size for testing
-    window.setFixedSize(*PHONESIZE)
-    
-    return window
+class LandlockedApp(QApplication):
+    def __init__(self, argv):
+        super().__init__(argv)
+        self.window = MainWindow()
+        
+    def run(self):
+        self.window.show()
+        
+        return self.exec()
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = createWindow()
+    app = LandlockedApp(sys.argv)
     
-    window.show()
-    sys.exit(app.exec())
+    sys.exit(app.run())
