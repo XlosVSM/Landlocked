@@ -24,9 +24,7 @@ class MainWindow(QWidget):
         self.label = QLabel("Hello World")
         layout.addWidget(self.label)
         
-        ##########################
-        # Add bottom row buttons #
-        ##########################
+        # ===== Add bottom row buttons =====
         layout.addStretch()     # Push buttons to bottom
         
         buttonRow = QHBoxLayout()
@@ -54,9 +52,7 @@ class MainWindow(QWidget):
         
         layout.addLayout(buttonRow)
         
-        ###################
-        # Set main layout #
-        ###################
+        # ===== Set main layout =====
         self.setLayout(layout)
         
     def buttonClicked(self, buttonName: str):
