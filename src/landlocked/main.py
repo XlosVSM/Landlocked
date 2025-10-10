@@ -22,14 +22,11 @@ class MainWindow(QWidget):
         
         layout = QVBoxLayout()
         
-        self.label = QLabel("Hello World")
-        layout.addWidget(self.label)
-        
         # ===== Add interactive map =====
-        self.mapView = QWebEngineView()
+        self.mapView = QWebEngineView(self)
         
         self.mapView.setUrl("https://www.openstreetmap.org")
-        layout.addWidget(self.mapView, stretch = 1)
+        self.mapView.setGeometry(0, 0, *PHONESIZE)
         
         # ===== Add bottom row buttons =====
         layout.addStretch()     # Push buttons to bottom
@@ -67,7 +64,7 @@ class MainWindow(QWidget):
         Handle button click
         """
         
-        self.label.setText(f"{buttonName} clicked")
+        pass
     
 class LandlockedApp(QApplication):
     def __init__(self, argv):
