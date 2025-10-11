@@ -26,34 +26,39 @@ class MainWindow(QWidget):
         map_html = """
         <!DOCTYPE html>
         <html>
-        <head>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-            <style>
-                html, body { margin:0; padding:0; height:100%; }
-                #map { width:100%; height:100%; }
-            </style>
-        </head>
-        <body>
-            <div id="map"></div>
-            <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-            <script>
-                var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-41.3, 174.8], 5);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19
-                }).addTo(map);
-            </script>
-        </body>
+            <head>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+                <style>
+                    html, body { margin:0; padding:0; height:100%; }
+                    #map { width:100%; height:100%; }
+                </style>
+            </head>
+            <body>
+                <div id="map"></div>
+                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+                <script>
+                    var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-41.3, 174.8], 5);
+                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        maxZoom: 19
+                    }).addTo(map);
+                </script>
+            </body>
         </html>
         """
         
         self.mapView = QWebEngineView(self)
         
-        # self.mapView.setUrl("https://www.openstreetmap.org")
         self.mapView.setHtml(map_html)
         self.mapView.setGeometry(0, 0, *PHONESIZE)
         
-        # ===== Add bottom row buttons =====
+        # ===== Add date display =====
+        
+        # ===== Add reset debug button =====
+        
+        # ===== Add place monument button =====
+        
+        # ===== Add bottom row screen selection buttons =====
         layout.addStretch()     # Push buttons to bottom
         
         buttonRow = QHBoxLayout()
