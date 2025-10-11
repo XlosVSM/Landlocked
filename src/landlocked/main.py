@@ -63,6 +63,8 @@ class MainWindow(QWidget):
         resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
         resetButton.setStyleSheet("border: 1px solid black; padding: 15px;")
         
+        resetButton.clicked.connect(lambda: self.buttonClicked("Reset"))
+        
         layout.addWidget(resetButton)
         
         # ===== Add place monument button =====
@@ -72,6 +74,8 @@ class MainWindow(QWidget):
         
         placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
         placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        
+        placeMonumentButton.clicked.connect(lambda: self.buttonClicked("Place Monument"))
         
         layout.addWidget(placeMonumentButton)
         
@@ -104,12 +108,16 @@ class MainWindow(QWidget):
         # ===== Set main layout =====
         self.setLayout(layout)
         
-    def buttonClicked(self, buttonName: str):
-        """
-        Handle button click
-        """
+    def buttonClicked(self, selectedButton: str):
+        clickOptions = {
+            "Reset": lambda: None,
+            "Place Monument": lambda: None,
+            "Activity": lambda: None,
+            "Map": lambda: None,
+            "Score": lambda: None,
+        }
         
-        pass
+        clickOptions[selectedButton]()
     
 class LandlockedApp(QApplication):
     def __init__(self, argv):
@@ -132,6 +140,8 @@ class LandlockedApp(QApplication):
         
     def applyDarkMode(self):
         darkMode = QPalette()
+        
+        self.setPalette(darkMode)
         
     def applyLightMode(self):
         self.setPalette(QPalette())
