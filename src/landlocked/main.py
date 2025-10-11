@@ -62,10 +62,15 @@ class MainWindow(QWidget):
         
         resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
         resetButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        resetLayout = QHBoxLayout()
+        resetLayout.addStretch()
+        resetLayout.addWidget(resetButton)
+        resetLayout.addStretch()
+        resetButton.setFixedWidth(PHONESIZE[0] // 2)
         
         resetButton.clicked.connect(lambda: self.buttonClicked("Reset"))
         
-        layout.addWidget(resetButton)
+        layout.addLayout(resetLayout)
         
         # ===== Add place monument button =====
         layout.addStretch()     # Push buttons to bottom
