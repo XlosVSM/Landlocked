@@ -184,6 +184,10 @@ class LandlockedApp(QApplication):
     def readFile(self, filePath: str):
         path = os.path.join(PROJECTROOT, filePath)
         
+        if filePath.endswith(".geojson"):
+            with open(path, "r") as f:
+                return json.load(f)
+        
         with open(path, "r", encoding = "utf-8") as f:
             return f.read()
         
