@@ -51,69 +51,19 @@ class MainWindow(QWidget):
     Main application
     """
     
-    def __init__(self):
+    def __init__(self, appInstance):
         super().__init__()
+        self.app = appInstance
         self.setWindowTitle("Landlocked!")
         self.setFixedSize(*PHONESIZE)
         
         layout = QVBoxLayout()
         
         # ===== Add interactive map =====
-        map_html = """
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                <style>
-                    html, body { margin:0; padding:0; height:100%; }
-                    #map { width:100%; height:100%; }
-                </style>
-            </head>
-            <body>
-                <div id="map"></div>
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-                <script>
-                    var map = L.map('map', { 
-                        zoomControl: true, 
-                        attributionControl: false
-                    });
-
-                    // Original bounding box covering all your suburbs
-                    var originalBounds = [
-                        [-41.36, 174.65],  // southwest
-                        [-41.20, 174.87]   // northeast
-                    ];
-
-                    // Add 1 km buffer
-                    var bufferLat = 0.009;
-                    var bufferLng = 0.01;
-
-                    var expandedBounds = [
-                        [originalBounds[0][0] - bufferLat, originalBounds[0][1] - bufferLng],
-                        [originalBounds[1][0] + bufferLat, originalBounds[1][1] + bufferLng]
-                    ];
-
-                    map.fitBounds(expandedBounds); // fit map
-
-                    // Lock zoom out so user cannot zoom out further
-                    var currentZoom = map.getZoom();
-                    map.setMinZoom(currentZoom);
-
-                    // Prevent panning outside expanded bounds
-                    map.setMaxBounds(expandedBounds);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19
-                    }).addTo(map);
-                </script>
-            </body>
-        </html>
-        """
-        
         self.mapView = QWebEngineView(self)
         
-        self.mapView.setHtml(map_html)
+        mapHTML = self.app.readFile("assets/html/map.html")
+        self.mapView.setHtml(mapHTML)
         self.mapView.setGeometry(0, 0, *PHONESIZE)
         
         # ===== Add date display =====
@@ -207,7 +157,7 @@ class MainWindow(QWidget):
 class LandlockedApp(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
-        self.window = MainWindow()
+        self.window = MainWindow(self)
         
         self.darkMode = self.isDarkMode()
         
@@ -230,6 +180,16 @@ class LandlockedApp(QApplication):
         
     def applyLightMode(self):
         self.setPalette(QPalette())
+        
+    def readFile(self, filePath: str):
+        path = os.path.join(PROJECTROOT, filePath)
+        
+        if filePath.endswith(".geojson"):
+            with open(path, "r") as f:
+                return json.load(f)
+        
+        with open(path, "r", encoding = "utf-8") as f:
+            return f.read()
         
     def run(self):
         self.window.show()
