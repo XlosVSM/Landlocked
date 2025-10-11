@@ -61,7 +61,8 @@ class MainWindow(QWidget):
         resetButton = QPushButton("Reset Game (Debug)")
         
         resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
-        resetButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        resetButton.setStyleSheet("border: 1px solid black; padding: 15px; color: black; background-color: #f0f0f0;")
+        
         resetLayout = QHBoxLayout()
         resetLayout.addStretch()
         resetLayout.addWidget(resetButton)
@@ -78,7 +79,7 @@ class MainWindow(QWidget):
         placeMonumentButton = QPushButton("Place Monument")
         
         placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
-        placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 15px; color: black; background-color: #f0f0f0;")
         
         placeMonumentButton.clicked.connect(lambda: self.buttonClicked("Place Monument"))
         
@@ -97,7 +98,7 @@ class MainWindow(QWidget):
         # Connect buttons
         for button in (self.activityButton, self.mapButton, self.scoreButton):
             button.setSizePolicy(button.sizePolicy().horizontalPolicy(), button.sizePolicy().verticalPolicy())
-            button.setStyleSheet("border: 1px solid black; padding: 15px;")
+            button.setStyleSheet("border: 1px solid black; padding: 15px; color: black; background-color: #f0f0f0;")
         
         self.activityButton.clicked.connect(lambda: self.buttonClicked("Activity"))
         self.mapButton.clicked.connect(lambda: self.buttonClicked("Map"))
