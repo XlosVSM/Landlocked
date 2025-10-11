@@ -1,5 +1,6 @@
+import json
 import os
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QStandardPaths
 from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
@@ -10,6 +11,37 @@ import sys
 #####################
 PHONESIZE = (360, 640)
 PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+
+##################
+# Data functions #
+##################
+def getUserSettingsPath() -> str:
+    appDataPath = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
+    os.makedirs(appDataPath, exist_ok = True)
+    
+    return os.path.join(appDataPath, "settings.json")
+
+def loadSettings():
+    path = getUserSettingsPath()
+    if os.path.exists(path):
+        try:
+            with open(path, "r") as f:
+                return json.load(f)
+            
+        except Exception:
+            pass
+    
+    return {"darkMode": False}
+
+def saveSettoings(settings):
+    path = getUserSettingsPath()
+    
+    try:
+        with open(path, "w") as f:
+            json.dump(settings, f)
+            
+    except Exception as E:
+        print(f"Error saving settings: {E}")
 
 ################
 # Main classes #
