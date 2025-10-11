@@ -74,7 +74,35 @@ class MainWindow(QWidget):
                 <div id="map"></div>
                 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
                 <script>
-                    var map = L.map('map', { zoomControl: false, attributionControl: false }).setView([-41.3, 174.8], 5);
+                    var map = L.map('map', { 
+                        zoomControl: true, 
+                        attributionControl: false
+                    });
+
+                    // Original bounding box covering all your suburbs
+                    var originalBounds = [
+                        [-41.36, 174.65],  // southwest
+                        [-41.20, 174.87]   // northeast
+                    ];
+
+                    // Add 1 km buffer
+                    var bufferLat = 0.009;
+                    var bufferLng = 0.01;
+
+                    var expandedBounds = [
+                        [originalBounds[0][0] - bufferLat, originalBounds[0][1] - bufferLng],
+                        [originalBounds[1][0] + bufferLat, originalBounds[1][1] + bufferLng]
+                    ];
+
+                    map.fitBounds(expandedBounds); // fit map
+
+                    // Lock zoom out so user cannot zoom out further
+                    var currentZoom = map.getZoom();
+                    map.setMinZoom(currentZoom);
+
+                    // Prevent panning outside expanded bounds
+                    map.setMaxBounds(expandedBounds);
+
                     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                         maxZoom: 19
                     }).addTo(map);
