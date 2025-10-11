@@ -33,7 +33,7 @@ def loadSettings():
     
     return {"darkMode": False}
 
-def saveSettoings(settings):
+def saveSettings(settings):
     path = getUserSettingsPath()
     
     try:
