@@ -10,6 +10,9 @@ import sys
 PHONESIZE = (360, 640)
 PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
+################
+# Main classes #
+################
 class MainWindow(QWidget):
     """
     Main application
@@ -57,13 +60,19 @@ class MainWindow(QWidget):
         # ===== Add reset debug button =====
         
         # ===== Add place monument button =====
-        
-        # ===== Add bottom row screen selection buttons =====
         layout.addStretch()     # Push buttons to bottom
         
-        buttonRow = QHBoxLayout()
-        buttonRow.setContentsMargins(0, 0, 0, 0)
-        buttonRow.setSpacing(0)
+        placeMonumentButton = QPushButton("Place Monument")
+        
+        placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
+        placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        
+        layout.addWidget(placeMonumentButton)
+        
+        # ===== Add bottom row screen selection buttons =====
+        screenSelectionButtonRow = QHBoxLayout()
+        screenSelectionButtonRow.setContentsMargins(0, 0, 0, 0)
+        screenSelectionButtonRow.setSpacing(0)
         
         # Create buttons
         self.activityButton = QPushButton("Activity")
@@ -80,11 +89,11 @@ class MainWindow(QWidget):
         self.scoreButton.clicked.connect(lambda: self.buttonClicked("Score"))
         
         # Add buttons to row
-        buttonRow.addWidget(self.activityButton)
-        buttonRow.addWidget(self.mapButton)
-        buttonRow.addWidget(self.scoreButton)
+        screenSelectionButtonRow.addWidget(self.activityButton)
+        screenSelectionButtonRow.addWidget(self.mapButton)
+        screenSelectionButtonRow.addWidget(self.scoreButton)
         
-        layout.addLayout(buttonRow)
+        layout.addLayout(screenSelectionButtonRow)
         
         # ===== Set main layout =====
         self.setLayout(layout)
