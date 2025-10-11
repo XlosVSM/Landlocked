@@ -203,6 +203,12 @@ class MainWindow(QWidget):
         }
         
         clickOptions[selectedButton]()
+        
+    def getGeoJSON(self, name: str):
+        path = os.path.join(PROJECTROOT, "assets", "data", f"{name}.geojson")
+        
+        with open(path, "r", encoding = "utf-8") as f:
+            return json.load(f)
     
 class LandlockedApp(QApplication):
     def __init__(self, argv):
