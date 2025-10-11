@@ -1,4 +1,5 @@
 import os
+from PySide6.QtCore import Qt
 from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
@@ -56,6 +57,24 @@ class MainWindow(QWidget):
         self.mapView.setGeometry(0, 0, *PHONESIZE)
         
         # ===== Add date display =====
+        dateLabel = QLabel()
+        
+        dateLabel.setStyleSheet("border: 1px solid black; padding: 15px; font-size: 18px; font-weight: bold; color: black; background-color: #f0f0f0;")
+        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        dateLabel.setText("""
+        Day #/7<br>
+        <span style="font-size:10px;">Time Left Today: #:##:##</span>
+        """)
+        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
+        dateLayout = QHBoxLayout()
+        dateLayout.addStretch()
+        dateLayout.addWidget(dateLabel)
+        dateLayout.addStretch()
+        dateLabel.setFixedWidth(PHONESIZE[0] // 2)
+        
+        layout.addLayout(dateLayout)
         
         # ===== Add reset debug button =====
         resetButton = QPushButton("Reset Game (Debug)")
