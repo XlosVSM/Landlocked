@@ -58,6 +58,12 @@ class MainWindow(QWidget):
         # ===== Add date display =====
         
         # ===== Add reset debug button =====
+        resetButton = QPushButton("Reset Game (Debug)")
+        
+        resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
+        resetButton.setStyleSheet("border: 1px solid black; padding: 15px;")
+        
+        layout.addWidget(resetButton)
         
         # ===== Add place monument button =====
         layout.addStretch()     # Push buttons to bottom
