@@ -5,6 +5,7 @@ from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
 import sys
+from typing import Union
 
 #####################
 # Declare constants #
@@ -15,13 +16,23 @@ PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 ##################
 # Data functions #
 ##################
-def get_user_settings_path() -> str:
-    appDataPath = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
-    os.makedirs(appDataPath, exist_ok = True)
-    
-    return os.path.join(appDataPath, "settings.json")
+def read_file(file_path: str) -> Union[dict, str]:
+    path = os.path.join(PROJECTROOT, file_path)
 
-def load_settings():
+    if file_path.endswith(".geojson"):
+        with open(path, "r") as f:
+            return json.load(f)
+
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
+def get_user_settings_path() -> str:
+    app_data_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
+    os.makedirs(app_data_path, exist_ok = True)
+    
+    return os.path.join(app_data_path, "settings.json")
+
+def load_settings() -> dict[str, bool]:
     path = get_user_settings_path()
     if os.path.exists(path):
         try:
@@ -51,9 +62,9 @@ class MainWindow(QWidget):
     Main application
     """
     
-    def __init__(self, appInstance):
+    def __init__(self, app_instance):
         super().__init__()
-        self.app = appInstance
+        self.app = app_instance
         self.setWindowTitle("Landlocked!")
         self.setFixedSize(*PHONESIZE)
         
@@ -67,40 +78,40 @@ class MainWindow(QWidget):
         self.mapView.setGeometry(0, 0, *PHONESIZE)
         
         # ===== Add date display =====
-        dateLabel = QLabel()
+        date_label = QLabel()
         
-        dateLabel.setStyleSheet("border: 1px solid black; padding: 4px 8px; font-size: 18px; font-weight: bold; color: black; background-color: #f0f0f0;")
-        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        date_label.setStyleSheet("border: 1px solid black; padding: 4px 8px; font-size: 18px; font-weight: bold; color: black; background-color: #f0f0f0;")
+        date_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        dateLabel.setText("""
+        date_label.setText("""
         Day #/7<br>
         <span style="font-size:10px;">Time Left Today: #:##:##</span>
         """)
-        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        date_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         
-        dateLayout = QHBoxLayout()
-        dateLayout.addStretch()
-        dateLayout.addWidget(dateLabel)
-        dateLayout.addStretch()
-        dateLabel.setFixedWidth(PHONESIZE[0] // 2)
+        date_layout = QHBoxLayout()
+        date_layout.addStretch()
+        date_layout.addWidget(date_label)
+        date_layout.addStretch()
+        date_label.setFixedWidth(PHONESIZE[0] // 2)
         
-        layout.addLayout(dateLayout)
+        layout.addLayout(date_layout)
         
         # ===== Add reset debug button =====
-        resetButton = QPushButton("Reset Game (Debug)")
+        reset_button = QPushButton("Reset Game (Debug)")
         
-        resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
-        resetButton.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
+        reset_button.setSizePolicy(reset_button.sizePolicy().horizontalPolicy(), reset_button.sizePolicy().verticalPolicy())
+        reset_button.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
         
-        resetLayout = QHBoxLayout()
-        resetLayout.addStretch()
-        resetLayout.addWidget(resetButton)
-        resetLayout.addStretch()
-        resetButton.setFixedWidth(PHONESIZE[0] // 2)
+        reset_layout = QHBoxLayout()
+        reset_layout.addStretch()
+        reset_layout.addWidget(reset_button)
+        reset_layout.addStretch()
+        reset_button.setFixedWidth(PHONESIZE[0] // 2)
         
-        resetButton.clicked.connect(lambda: self.buttonClicked("Reset"))
+        reset_button.clicked.connect(lambda: self.button_clicked("Reset"))
         
-        layout.addLayout(resetLayout)
+        layout.addLayout(reset_layout)
         
         # ===== Add place monument button =====
         layout.addStretch()     # Push buttons to bottom
@@ -110,14 +121,14 @@ class MainWindow(QWidget):
         placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
         placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
         
-        placeMonumentButton.clicked.connect(lambda: self.buttonClicked("Place Monument"))
+        placeMonumentButton.clicked.connect(lambda: self.button_clicked("Place Monument"))
         
         layout.addWidget(placeMonumentButton)
         
         # ===== Add bottom row screen selection buttons =====
-        screenSelectionButtonRow = QHBoxLayout()
-        screenSelectionButtonRow.setContentsMargins(0, 0, 0, 0)
-        screenSelectionButtonRow.setSpacing(0)
+        screen_selection_button_row = QHBoxLayout()
+        screen_selection_button_row.setContentsMargins(0, 0, 0, 0)
+        screen_selection_button_row.setSpacing(0)
         
         # Create buttons
         self.activityButton = QPushButton("Activity")
@@ -129,22 +140,22 @@ class MainWindow(QWidget):
             button.setSizePolicy(button.sizePolicy().horizontalPolicy(), button.sizePolicy().verticalPolicy())
             button.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
         
-        self.activityButton.clicked.connect(lambda: self.buttonClicked("Activity"))
-        self.mapButton.clicked.connect(lambda: self.buttonClicked("Map"))
-        self.scoreButton.clicked.connect(lambda: self.buttonClicked("Score"))
+        self.activityButton.clicked.connect(lambda: self.button_clicked("Activity"))
+        self.mapButton.clicked.connect(lambda: self.button_clicked("Map"))
+        self.scoreButton.clicked.connect(lambda: self.button_clicked("Score"))
         
         # Add buttons to row
-        screenSelectionButtonRow.addWidget(self.activityButton)
-        screenSelectionButtonRow.addWidget(self.mapButton)
-        screenSelectionButtonRow.addWidget(self.scoreButton)
+        screen_selection_button_row.addWidget(self.activityButton)
+        screen_selection_button_row.addWidget(self.mapButton)
+        screen_selection_button_row.addWidget(self.scoreButton)
         
-        layout.addLayout(screenSelectionButtonRow)
+        layout.addLayout(screen_selection_button_row)
         
         # ===== Set main layout =====
         self.setLayout(layout)
         
-    def buttonClicked(self, selectedButton: str):
-        clickOptions = {
+    def button_clicked(self, selected_button: str):
+        click_options = {
             "Reset": lambda: None,
             "Place Monument": lambda: None,
             "Activity": lambda: None,
@@ -152,45 +163,35 @@ class MainWindow(QWidget):
             "Score": lambda: None,
         }
         
-        clickOptions[selectedButton]()
-    
+        click_options[selected_button]()
+
 class LandlockedApp(QApplication):
     def __init__(self, argv):
         super().__init__(argv)
         self.window = MainWindow(self)
         
-        self.darkMode = self.isDarkMode()
+        self.darkMode = self.is_dark_mode()
         
         if self.darkMode:
-            self.applyDarkMode()
+            self.apply_dark_mode()
             
         else:
-            self.applyLightMode()
+            self.apply_light_mode()
         
-    def isDarkMode(self) -> bool:
+    def is_dark_mode(self) -> bool:
         palette = self.palette()
         color = palette.color(QPalette.ColorRole.Window)
         
         return color.value() < 128
         
-    def applyDarkMode(self):
-        darkMode = QPalette()
+    def apply_dark_mode(self):
+        dark_mode = QPalette()
         
-        self.setPalette(darkMode)
+        self.setPalette(dark_mode)
         
-    def applyLightMode(self):
+    def apply_light_mode(self):
         self.setPalette(QPalette())
-        
-    def readFile(self, filePath: str):
-        path = os.path.join(PROJECTROOT, filePath)
-        
-        if filePath.endswith(".geojson"):
-            with open(path, "r") as f:
-                return json.load(f)
-        
-        with open(path, "r", encoding = "utf-8") as f:
-            return f.read()
-        
+
     def run(self):
         self.window.show()
         
