@@ -15,14 +15,14 @@ PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 ##################
 # Data functions #
 ##################
-def getUserSettingsPath() -> str:
+def get_user_settings_path() -> str:
     appDataPath = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
     os.makedirs(appDataPath, exist_ok = True)
     
     return os.path.join(appDataPath, "settings.json")
 
-def loadSettings():
-    path = getUserSettingsPath()
+def load_settings():
+    path = get_user_settings_path()
     if os.path.exists(path):
         try:
             with open(path, "r") as f:
@@ -33,8 +33,8 @@ def loadSettings():
     
     return {"darkMode": False}
 
-def saveSettings(settings):
-    path = getUserSettingsPath()
+def save_settings(settings):
+    path = get_user_settings_path()
     
     try:
         with open(path, "w") as f:
