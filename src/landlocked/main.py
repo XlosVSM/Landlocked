@@ -1,10 +1,8 @@
-import json
-import os
+import json, os, sys
 from PySide6.QtCore import Qt, QStandardPaths, QUrl
 from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
-import sys
 from typing import Union
 
 #####################
@@ -69,6 +67,7 @@ class MainWindow(QWidget):
         self.setFixedSize(*PHONESIZE)
         
         layout = QVBoxLayout()
+        button_stylesheet = "border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;"
         
         # ===== Add interactive map =====
         self.mapView = QWebEngineView(self)
@@ -99,8 +98,11 @@ class MainWindow(QWidget):
         # ===== Add reset debug button =====
         reset_button = QPushButton("Reset Game (Debug)")
         
-        reset_button.setSizePolicy(reset_button.sizePolicy().horizontalPolicy(), reset_button.sizePolicy().verticalPolicy())
-        reset_button.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
+        reset_button.setSizePolicy(
+            reset_button.sizePolicy().horizontalPolicy(),
+            reset_button.sizePolicy().verticalPolicy()
+        )
+        reset_button.setStyleSheet(button_stylesheet)
         
         reset_layout = QHBoxLayout()
         reset_layout.addStretch()
@@ -118,7 +120,7 @@ class MainWindow(QWidget):
         placeMonumentButton = QPushButton("Place Monument")
         
         placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
-        placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
+        placeMonumentButton.setStyleSheet(button_stylesheet)
         
         placeMonumentButton.clicked.connect(lambda: self.button_clicked("Place Monument"))
         
@@ -137,7 +139,7 @@ class MainWindow(QWidget):
         # Connect buttons
         for button in (self.activityButton, self.mapButton, self.scoreButton):
             button.setSizePolicy(button.sizePolicy().horizontalPolicy(), button.sizePolicy().verticalPolicy())
-            button.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
+            button.setStyleSheet(button_stylesheet)
         
         self.activityButton.clicked.connect(lambda: self.button_clicked("Activity"))
         self.mapButton.clicked.connect(lambda: self.button_clicked("Map"))
