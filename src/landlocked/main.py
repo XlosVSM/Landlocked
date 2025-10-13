@@ -1,6 +1,6 @@
 import json
 import os
-from PySide6.QtCore import Qt, QStandardPaths
+from PySide6.QtCore import Qt, QStandardPaths, QUrl
 from PySide6.QtGui import QPalette
 from PySide6.QtWebEngineWidgets import QWebEngineView
 from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
@@ -72,9 +72,8 @@ class MainWindow(QWidget):
         
         # ===== Add interactive map =====
         self.mapView = QWebEngineView(self)
-        
-        mapHTML = self.app.readFile("assets/html/map.html")
-        self.mapView.setHtml(mapHTML)
+        mapHTMLPath = os.path.abspath(os.path.join(PROJECTROOT, "assets/html/index.html"))
+        self.mapView.load(QUrl.fromLocalFile(mapHTMLPath))
         self.mapView.setGeometry(0, 0, *PHONESIZE)
         
         # ===== Add date display =====
