@@ -33,12 +33,8 @@ def get_user_settings_path() -> str:
 def load_settings() -> dict[str, bool]:
     path = get_user_settings_path()
     if os.path.exists(path):
-        try:
-            with open(path, "r") as f:
-                return json.load(f)
-            
-        except Exception:
-            pass
+        with open(path, "r") as f:
+            return json.load(f)
     
     return {"darkMode": False}
 
@@ -117,14 +113,17 @@ class MainWindow(QWidget):
         # ===== Add place monument button =====
         layout.addStretch()     # Push buttons to bottom
         
-        placeMonumentButton = QPushButton("Place Monument")
+        place_monument_button = QPushButton("Place Monument")
         
-        placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
-        placeMonumentButton.setStyleSheet(button_stylesheet)
+        place_monument_button.setSizePolicy(
+            place_monument_button.sizePolicy().horizontalPolicy(),
+            place_monument_button.sizePolicy().verticalPolicy()
+        )
+        place_monument_button.setStyleSheet(button_stylesheet)
         
-        placeMonumentButton.clicked.connect(lambda: self.button_clicked("Place Monument"))
+        place_monument_button.clicked.connect(lambda: self.button_clicked("Place Monument"))
         
-        layout.addWidget(placeMonumentButton)
+        layout.addWidget(place_monument_button)
         
         # ===== Add bottom row screen selection buttons =====
         screen_selection_button_row = QHBoxLayout()
