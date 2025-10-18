@@ -1,242 +1,62 @@
-import json
-import os
-from PySide6.QtCore import Qt, QStandardPaths
-from PySide6.QtGui import QPalette
-from PySide6.QtWebEngineWidgets import QWebEngineView
-from PySide6.QtWidgets import QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel
-import sys
+###############################################
+# Adjust Kivy window settings for development #
+###############################################
+from kivy.config import Config
 
-#####################
-# Declare constants #
-#####################
 PHONESIZE = (360, 640)
-PROJECTROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+Config.set('graphics', 'width', str(PHONESIZE[0]))
+Config.set('graphics', 'height', str(PHONESIZE[1]))
+Config.set('graphics', 'resizable', '0')
 
-##################
-# Data functions #
-##################
-def getUserSettingsPath() -> str:
-    appDataPath = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
-    os.makedirs(appDataPath, exist_ok = True)
-    
-    return os.path.join(appDataPath, "settings.json")
+###########
+# Imports #
+###########
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.button import Button
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy_garden.mapview import MapView, MapMarker
 
-def loadSettings():
-    path = getUserSettingsPath()
-    if os.path.exists(path):
-        try:
-            with open(path, "r") as f:
-                return json.load(f)
-            
-        except Exception:
-            pass
-    
-    return {"darkMode": False}
+# ===== Import screens =====
+from screens.activity_screen import ActivityScreen
+from screens.map_screen import MapScreen
+from screens.score_screen import ScoreScreen
 
-def saveSettings(settings):
-    path = getUserSettingsPath()
-    
-    try:
-        with open(path, "w") as f:
-            json.dump(settings, f)
-            
-    except Exception as E:
-        print(f"Error saving settings: {E}")
+###########
+# Screens #
+###########
+class MapApp(App):
+    def build(self):
+        root = BoxLayout(orientation = 'vertical')
 
-################
-# Main classes #
-################
-class MainWindow(QWidget):
-    """
-    Main application
-    """
-    
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("Landlocked!")
-        self.setFixedSize(*PHONESIZE)
-        
-        layout = QVBoxLayout()
-        
-        # ===== Add interactive map =====
-        map_html = """
-        <!DOCTYPE html>
-        <html>
-            <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-                <style>
-                    html, body { margin:0; padding:0; height:100%; }
-                    #map { width:100%; height:100%; }
-                </style>
-            </head>
-            <body>
-                <div id="map"></div>
-                <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-                <script>
-                    var map = L.map('map', { 
-                        zoomControl: true, 
-                        attributionControl: false
-                    });
+        # Screen Manager
+        self.sm = ScreenManager()
+        self.sm.add_widget(ActivityScreen(name = "activity"))
+        self.sm.add_widget(MapScreen(name = "map"))
+        self.sm.add_widget(ScoreScreen(name = "score"))
+        self.sm.current = "map"
 
-                    // Original bounding box covering all your suburbs
-                    var originalBounds = [
-                        [-41.36, 174.65],  // southwest
-                        [-41.20, 174.87]   // northeast
-                    ];
+        # Bottom button bar
+        button_bar = BoxLayout(size_hint_y = 0.1)
+        activity_btn = Button(text = "Activity")
+        map_btn = Button(text = "Map")
+        score_btn = Button(text = "Score")
 
-                    // Add 1 km buffer
-                    var bufferLat = 0.009;
-                    var bufferLng = 0.01;
+        # Switch screens
+        activity_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "activity"))
+        map_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "map"))
+        score_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "score"))
 
-                    var expandedBounds = [
-                        [originalBounds[0][0] - bufferLat, originalBounds[0][1] - bufferLng],
-                        [originalBounds[1][0] + bufferLat, originalBounds[1][1] + bufferLng]
-                    ];
+        button_bar.add_widget(activity_btn)
+        button_bar.add_widget(map_btn)
+        button_bar.add_widget(score_btn)
 
-                    map.fitBounds(expandedBounds); // fit map
+        # Add widgets to root
+        root.add_widget(self.sm)
+        root.add_widget(button_bar)
 
-                    // Lock zoom out so user cannot zoom out further
-                    var currentZoom = map.getZoom();
-                    map.setMinZoom(currentZoom);
+        return root
 
-                    // Prevent panning outside expanded bounds
-                    map.setMaxBounds(expandedBounds);
-
-                    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 19
-                    }).addTo(map);
-                </script>
-            </body>
-        </html>
-        """
-        
-        self.mapView = QWebEngineView(self)
-        
-        self.mapView.setHtml(map_html)
-        self.mapView.setGeometry(0, 0, *PHONESIZE)
-        
-        # ===== Add date display =====
-        dateLabel = QLabel()
-        
-        dateLabel.setStyleSheet("border: 1px solid black; padding: 4px 8px; font-size: 18px; font-weight: bold; color: black; background-color: #f0f0f0;")
-        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        dateLabel.setText("""
-        Day #/7<br>
-        <span style="font-size:10px;">Time Left Today: #:##:##</span>
-        """)
-        dateLabel.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        
-        dateLayout = QHBoxLayout()
-        dateLayout.addStretch()
-        dateLayout.addWidget(dateLabel)
-        dateLayout.addStretch()
-        dateLabel.setFixedWidth(PHONESIZE[0] // 2)
-        
-        layout.addLayout(dateLayout)
-        
-        # ===== Add reset debug button =====
-        resetButton = QPushButton("Reset Game (Debug)")
-        
-        resetButton.setSizePolicy(resetButton.sizePolicy().horizontalPolicy(), resetButton.sizePolicy().verticalPolicy())
-        resetButton.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
-        
-        resetLayout = QHBoxLayout()
-        resetLayout.addStretch()
-        resetLayout.addWidget(resetButton)
-        resetLayout.addStretch()
-        resetButton.setFixedWidth(PHONESIZE[0] // 2)
-        
-        resetButton.clicked.connect(lambda: self.buttonClicked("Reset"))
-        
-        layout.addLayout(resetLayout)
-        
-        # ===== Add place monument button =====
-        layout.addStretch()     # Push buttons to bottom
-        
-        placeMonumentButton = QPushButton("Place Monument")
-        
-        placeMonumentButton.setSizePolicy(placeMonumentButton.sizePolicy().horizontalPolicy(), placeMonumentButton.sizePolicy().verticalPolicy())
-        placeMonumentButton.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
-        
-        placeMonumentButton.clicked.connect(lambda: self.buttonClicked("Place Monument"))
-        
-        layout.addWidget(placeMonumentButton)
-        
-        # ===== Add bottom row screen selection buttons =====
-        screenSelectionButtonRow = QHBoxLayout()
-        screenSelectionButtonRow.setContentsMargins(0, 0, 0, 0)
-        screenSelectionButtonRow.setSpacing(0)
-        
-        # Create buttons
-        self.activityButton = QPushButton("Activity")
-        self.mapButton = QPushButton("Map")
-        self.scoreButton = QPushButton("Score")
-        
-        # Connect buttons
-        for button in (self.activityButton, self.mapButton, self.scoreButton):
-            button.setSizePolicy(button.sizePolicy().horizontalPolicy(), button.sizePolicy().verticalPolicy())
-            button.setStyleSheet("border: 1px solid black; padding: 4px 8px; color: black; background-color: #f0f0f0;")
-        
-        self.activityButton.clicked.connect(lambda: self.buttonClicked("Activity"))
-        self.mapButton.clicked.connect(lambda: self.buttonClicked("Map"))
-        self.scoreButton.clicked.connect(lambda: self.buttonClicked("Score"))
-        
-        # Add buttons to row
-        screenSelectionButtonRow.addWidget(self.activityButton)
-        screenSelectionButtonRow.addWidget(self.mapButton)
-        screenSelectionButtonRow.addWidget(self.scoreButton)
-        
-        layout.addLayout(screenSelectionButtonRow)
-        
-        # ===== Set main layout =====
-        self.setLayout(layout)
-        
-    def buttonClicked(self, selectedButton: str):
-        clickOptions = {
-            "Reset": lambda: None,
-            "Place Monument": lambda: None,
-            "Activity": lambda: None,
-            "Map": lambda: None,
-            "Score": lambda: None,
-        }
-        
-        clickOptions[selectedButton]()
-    
-class LandlockedApp(QApplication):
-    def __init__(self, argv):
-        super().__init__(argv)
-        self.window = MainWindow()
-        
-        self.darkMode = self.isDarkMode()
-        
-        if self.darkMode:
-            self.applyDarkMode()
-            
-        else:
-            self.applyLightMode()
-        
-    def isDarkMode(self) -> bool:
-        palette = self.palette()
-        color = palette.color(QPalette.ColorRole.Window)
-        
-        return color.value() < 128
-        
-    def applyDarkMode(self):
-        darkMode = QPalette()
-        
-        self.setPalette(darkMode)
-        
-    def applyLightMode(self):
-        self.setPalette(QPalette())
-        
-    def run(self):
-        self.window.show()
-        
-        return self.exec()
 
 if __name__ == "__main__":
-    app = LandlockedApp(sys.argv)
-    
-    sys.exit(app.run())
+    MapApp().run()
