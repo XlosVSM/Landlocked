@@ -11,28 +11,20 @@ Config.set('graphics', 'resizable', '0')
 ###########
 # Imports #
 ###########
-
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy_garden.mapview import MapView, MapMarker
 
+# ===== Import screens =====
+from screens.activity_screen import ActivityScreen
+from screens.map_screen import MapScreen
+from screens.score_screen import ScoreScreen
+
 ###########
 # Screens #
 ###########
-class MapScreen(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        mapview = MapView(zoom=12, lat=-41.2865, lon=174.7762)
-        marker = MapMarker(lat=-41.2865, lon=174.7762)
-        mapview.add_marker(marker)
-        self.add_widget(mapview)
-
-
-
-
-
 class MapApp(App):
     def build(self):
         root = BoxLayout(orientation = 'vertical')
@@ -50,6 +42,11 @@ class MapApp(App):
         map_btn = Button(text = "Map")
         score_btn = Button(text = "Score")
 
+        # Switch screens
+        activity_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "activity"))
+        map_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "map"))
+        score_btn.bind(on_press = lambda x: setattr(self.sm, 'current', "score"))
+
         button_bar.add_widget(activity_btn)
         button_bar.add_widget(map_btn)
         button_bar.add_widget(score_btn)
@@ -59,6 +56,7 @@ class MapApp(App):
         root.add_widget(button_bar)
 
         return root
+
 
 if __name__ == "__main__":
     MapApp().run()
