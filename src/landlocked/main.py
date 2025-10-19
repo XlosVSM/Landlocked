@@ -14,8 +14,7 @@ Config.set('graphics', 'resizable', '0')
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
-from kivy.uix.screenmanager import ScreenManager, Screen
-from kivy_garden.mapview import MapView, MapMarker
+from kivy.uix.screenmanager import ScreenManager
 
 # ===== Import screens =====
 from screens.activity_screen import ActivityScreen
@@ -26,6 +25,10 @@ from screens.score_screen import ScoreScreen
 # Screens #
 ###########
 class MapApp(App):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.sm = None
+
     def build(self):
         root = BoxLayout(orientation = 'vertical')
 

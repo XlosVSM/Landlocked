@@ -62,7 +62,7 @@ class MapScreen(Screen):
 
         # ===== Add reset button =====
         reset_button = Button(
-            text = "Reset Game (Dubug)",
+            text = "Reset Game (Debug)",
             size_hint = (0.5, None),
             height = 40,
             pos_hint = {"center_x": 0.5, "y": 0.02},
